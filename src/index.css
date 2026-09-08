@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #0B0F19;
+    --bg-secondary: #111827;
+    --bg-tertiary: #1E293B;
+    --text-primary: #F3F4F6;
+    --text-muted: #94A3B8;
+    --brand-orange: #FF9800;
+    --brand-green: #10B981;
+    --brand-terminal: #4ADE80;
+  }
+
+  html, body {
+    background-color: #07090E;
+    color: #F3F4F6;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0F19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #252e42;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* Monospace fonts for editor & terminal */
+.font-mono-code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Syntax Highlighting Classes for Editor */
+.tpp-token-keyword {
+  color: #FF9800;
+  font-weight: 600;
+}
+
+.tpp-token-string {
+  color: #4ADE80;
+}
+
+.tpp-token-number {
+  color: #C084FC;
+}
+
+.tpp-token-comment {
+  color: #64748B;
+  font-style: italic;
+}
+
+.tpp-token-builtin {
+  color: #38BDF8;
+}
+
+.tpp-token-operator {
+  color: #FB7185;
+}
+
+.tpp-token-ident {
+  color: #E2E8F0;
+}
