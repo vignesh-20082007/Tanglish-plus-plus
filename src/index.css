@@ -29,6 +29,11 @@
     display: flex;
     flex-direction: column;
   }
+
+  ::selection {
+    background-color: #2563EB;
+    color: #FFFFFF;
+  }
 }
 
 /* Custom Scrollbars */

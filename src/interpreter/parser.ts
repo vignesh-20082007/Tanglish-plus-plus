@@ -17,6 +17,7 @@ import {
   BreakStatement,
   ContinueStatement,
   PassStatement,
+  DeleteStatement,
   LiteralExpr,
   IdentifierExpr,
   BinaryExpr,
@@ -110,6 +111,8 @@ export class Parser {
         this.advance();
         this.expectStatementTerminator();
         return { type: 'PassStatement', line: token.line, col: token.col };
+      case TokenType.DEL:
+        return this.parseDeleteStatement();
       default:
         return this.parseAssignOrExpressionStatement();
     }
@@ -396,6 +399,25 @@ export class Parser {
       type: 'ImportStatement',
       moduleName: modToken.value,
       alias,
+      line: token.line,
+      col: token.col,
+    };
+  }
+
+  private parseDeleteStatement(): DeleteStatement {
+    const token = this.advance(); // consume 'del' or 'azhi'
+    const target = this.parseCallOrAccess();
+    if (
+      target.type !== 'IdentifierExpr' &&
+      target.type !== 'IndexExpr' &&
+      target.type !== 'MemberExpr'
+    ) {
+      throw new ParserError("del target variable, index alladhu attribute-aga irukkanum", token.line, token.col);
+    }
+    this.expectStatementTerminator();
+    return {
+      type: 'DeleteStatement',
+      target,
       line: token.line,
       col: token.col,
     };

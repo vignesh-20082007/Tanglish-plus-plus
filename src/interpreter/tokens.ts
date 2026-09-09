@@ -43,6 +43,7 @@ export enum TokenType {
   NIRUVA = 'NIRUVA',           // break
   THODARU = 'THODARU',         // continue
   PASS = 'PASS',               // pass
+  DEL = 'DEL',                 // del / azhi
 
   // Operators
   EXPONENT = '**',
@@ -120,4 +121,6 @@ export const KEYWORDS: Record<string, TokenType> = {
   niruva: TokenType.NIRUVA,
   thodaru: TokenType.THODARU,
   pass: TokenType.PASS,
+  del: TokenType.DEL,
+  azhi: TokenType.DEL,
 };

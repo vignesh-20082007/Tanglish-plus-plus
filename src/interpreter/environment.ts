@@ -90,6 +90,26 @@ export class Environment {
     return false;
   }
 
+  public remove(name: string): boolean {
+    if (this.isMarkedGlobal(name)) {
+      const root = this.getRoot();
+      if (root.values.has(name)) {
+        return root.values.delete(name);
+      }
+      throw new NameError(name);
+    }
+
+    if (this.values.has(name)) {
+      return this.values.delete(name);
+    }
+
+    if (this.parent !== null && this.parent.has(name)) {
+      return this.parent.remove(name);
+    }
+
+    throw new NameError(name);
+  }
+
   public getDirectKeys(): string[] {
     return Array.from(this.values.keys());
   }

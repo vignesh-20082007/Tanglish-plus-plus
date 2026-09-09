@@ -15,7 +15,8 @@ export type Statement =
   | ImportStatement
   | BreakStatement
   | ContinueStatement
-  | PassStatement;
+  | PassStatement
+  | DeleteStatement;
 
 export type Expression =
   | LiteralExpr
@@ -121,6 +122,11 @@ export interface ContinueStatement extends BaseNode {
 
 export interface PassStatement extends BaseNode {
   type: 'PassStatement';
+}
+
+export interface DeleteStatement extends BaseNode {
+  type: 'DeleteStatement';
+  target: Expression;
 }
 
 // Expressions

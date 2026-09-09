@@ -298,4 +298,151 @@ sollu(naalkati.month(2026, 9))
 sollu("All extended standard library modules loaded successfully!")
 `,
   },
+  {
+    id: 'string-builtins',
+    name: '10. String Built-in Functions (சரங்கள் செயல்பாடுகள்)',
+    category: 'Strings & Text',
+    description: 'Demonstrates Python-style string built-ins: len, capitalize, centre, find, isalnum, isalpha, isdigit, lower, islower, isupper, upper, title, swapcase, count.',
+    code: `# Tanglish++ (T++) - Python-Style String Built-in Functions & Methods
+# Featuring: len, capitalize, centre, find, isalnum, isalpha, isdigit,
+#            lower, islower, isupper, upper, title, swapcase, count
+
+msg = "vanakkam tamil nadu 2026!"
+
+sollu("==================================================")
+sollu("       Tanglish++ String Built-ins Demo")
+sollu("==================================================")
+sollu("Original string      :", msg)
+
+# 1. len() - Function and method syntax
+sollu("\\n[1] Length (len):")
+sollu("len(msg)             :", len(msg))
+sollu("msg.len()            :", msg.len())
+
+# 2. capitalize() - First letter capital, rest lowercase
+sollu("\\n[2] Capitalize:")
+sollu("msg.capitalize()     :", msg.capitalize())
+sollu("capitalize('hello')  :", capitalize("hello"))
+
+# 3. centre() & center() - Centered padding
+sollu("\\n[3] Centre / Center:")
+sollu("msg.centre(36, '=')  :", msg.centre(36, "="))
+sollu("center('TAMIL', 15)  :", center("TAMIL", 15, "-"))
+
+# 4. find() - Substring search with slice
+sollu("\\n[4] Find:")
+sollu("msg.find('tamil')    :", msg.find("tamil"))
+sollu("msg.find('python')   :", msg.find("python"))  # Returns -1 if not found
+
+# 5. isalnum(), isalpha(), isdigit() - Content validation
+sollu("\\n[5] Content Validation:")
+sollu("'TN2026'.isalnum()   :", "TN2026".isalnum())
+sollu("'Tamil'.isalpha()    :", "Tamil".isalpha())
+sollu("'2026'.isdigit()     :", "2026".isdigit())
+sollu("isalnum('tn 2026')   :", isalnum("tn 2026"))  # False because of space
+
+# 6. lower(), upper(), islower(), isupper() - Casing and case tests
+sollu("\\n[6] Casing & Case Tests:")
+sollu("msg.upper()          :", msg.upper())
+sollu("msg.lower()          :", msg.lower())
+sollu("msg.islower()        :", msg.islower())
+sollu("'TAMIL'.isupper()    :", "TAMIL".isupper())
+
+# 7. title() and swapcase() - Styling
+sollu("\\n[7] Title & Swapcase:")
+sollu("msg.title()          :", msg.title())
+sollu("'VaNaKkAm'.swapcase():", "VaNaKkAm".swapcase())
+
+# 8. count() - String and List counts
+sollu("\\n[8] Substring & List Count:")
+sollu("msg.count('a')       :", msg.count("a"))
+sollu("count(msg, 'tamil')  :", count(msg, "tamil"))
+
+fruits = ["mango", "apple", "mango", "banana", "mango"]
+sollu("fruits.count('mango'):", fruits.count("mango"))
+sollu("len(fruits)          :", len(fruits))
+
+sollu("\\n==================================================")
+sollu("All string built-in functions executed successfully!")
+`,
+  },
+  {
+    id: 'list-builtins',
+    name: '11. List Functions & del Keyword (பட்டியல் செயல்பாடுகள்)',
+    category: 'Lists & Collections',
+    description: 'Demonstrates Python-style list operations: append, extend, del keyword, remove, pop, clear, index, reverse, sort, max, min, sum.',
+    code: `# Tanglish++ (T++) - List Operations & del Keyword
+# Featuring: append, extend, del, remove, pop, clear, index,
+#            reverse, sort, max, min, sum
+
+sollu("==================================================")
+sollu("     Tanglish++ List Operations & del Demo")
+sollu("==================================================")
+
+# 1. Creating and Extending lists
+heroes = ["Kamal", "Rajini"]
+sollu("\\n[1] Append & Extend:")
+heroes.append("Ajith")
+heroes.extend(["Vijay", "Suriya"])
+sollu("Heroes list:", heroes)
+
+# 2. del keyword on list indices and variables
+sollu("\\n[2] del / azhi Keyword:")
+sollu("Before del heroes[0]:", heroes)
+del heroes[0]
+sollu("After del heroes[0] :", heroes)
+
+# del on dictionary keys
+actor = {"name": "Vijay", "title": "Thalapathy", "age": 50}
+sollu("Actor dict before del:", actor)
+del actor["age"]
+sollu("Actor dict after del :", actor)
+
+# 3. pop() and remove()
+sollu("\\n[3] Pop & Remove:")
+popped_last = heroes.pop()
+sollu("Popped last hero :", popped_last)
+sollu("List after pop   :", heroes)
+
+heroes.remove("Ajith")
+sollu("After remove('Ajith'):", heroes)
+
+# 4. index()
+sollu("\\n[4] Index:")
+pos = heroes.index("Vijay")
+sollu("Index of 'Vijay' in heroes:", pos)
+
+# 5. reverse()
+scores = [45, 98, 12, 76, 89, 34]
+sollu("\\n[5] Reverse:")
+sollu("Original scores:", scores)
+scores.reverse()
+sollu("Reversed scores:", scores)
+
+# 6. sort() - Ascending and Descending (unmai)
+sollu("\\n[6] Sort:")
+scores.sort()
+sollu("Sorted ascending :", scores)
+scores.sort(unmai)
+sollu("Sorted descending:", scores)
+
+# 7. Math functions: max(), min(), sum()
+sollu("\\n[7] Math & Aggregate Functions:")
+sollu("max(scores) :", max(scores))
+sollu("min(scores) :", min(scores))
+sollu("sum(scores) :", sum(scores))
+sollu("scores.sum():", scores.sum())
+
+# 8. clear()
+sollu("\\n[8] Clear:")
+scores.clear()
+sollu("scores after clear():", scores)
+sollu("len(scores)         :", len(scores))
+
+sollu("\\n==================================================")
+sollu("All list operations & del statements executed successfully!")
+`,
+  },
 ];
+
+

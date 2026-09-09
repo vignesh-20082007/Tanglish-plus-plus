@@ -23,9 +23,33 @@ import {
   ListLiteral,
   DictLiteral,
   LambdaExpr,
+  DeleteStatement,
 } from './ast';
 import { Environment, NameError } from './environment';
 import { createBuiltinModules, ExitException } from './modules';
+import {
+  pyLen,
+  pyCapitalize,
+  pyCenter,
+  pyFind,
+  pyIsAlnum,
+  pyIsAlpha,
+  pyIsDigit,
+  pyLower,
+  pyIsLower,
+  pyIsUpper,
+  pyUpper,
+  pyTitle,
+  pySwapCase,
+  pyCount,
+} from './string_builtins';
+import {
+  pyMax,
+  pyMin,
+  pySum,
+  pyIndex,
+  pySort,
+} from './list_builtins';
 
 // Control Flow Signals
 export class ReturnSignal {
@@ -293,14 +317,225 @@ export class Evaluator {
       })
     );
 
+    const lenFn = new BuiltinFunction('len', (_, args, __, line, col) => {
+      if (args.length === 0) throw new TypeError('len() requires an argument', line, col);
+      try {
+        return pyLen(args[0]);
+      } catch (err: any) {
+        throw new TypeError(err.message, line, col);
+      }
+    });
+    this.globalEnv.define('len', lenFn);
+    this.globalEnv.define('alavu', lenFn);
+
+    // Python-style string built-in functions
     this.globalEnv.define(
-      'alavu', // len()
-      new BuiltinFunction('alavu', (_, args, __, line, col) => {
-        if (args.length === 0) throw new TypeError('alavu() requires an argument', line, col);
-        const obj = args[0];
-        if (typeof obj === 'string' || Array.isArray(obj)) return obj.length;
-        if (obj && typeof obj === 'object') return Object.keys(obj).length;
-        throw new TypeError(`'${typeof obj}' alavu() support pannaadhu`, line, col);
+      'capitalize',
+      new BuiltinFunction('capitalize', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('capitalize() requires a string argument', line, col);
+        return pyCapitalize(String(args[0]));
+      })
+    );
+
+    const centerFn = new BuiltinFunction('center', (_, args, __, line, col) => {
+      if (args.length === 0) throw new TypeError('center() requires at least a string and width', line, col);
+      const s = String(args[0]);
+      const width = Number(args[1] || 0);
+      const fill = args[2] !== undefined ? String(args[2]) : ' ';
+      return pyCenter(s, width, fill);
+    });
+    this.globalEnv.define('center', centerFn);
+    this.globalEnv.define('centre', centerFn);
+
+    this.globalEnv.define(
+      'find',
+      new BuiltinFunction('find', (_, args, __, line, col) => {
+        if (args.length < 2) throw new TypeError('find() requires a string and substring', line, col);
+        const s = String(args[0]);
+        const sub = String(args[1]);
+        const start = args[2] !== undefined ? Number(args[2]) : undefined;
+        const end = args[3] !== undefined ? Number(args[3]) : undefined;
+        return pyFind(s, sub, start, end);
+      })
+    );
+
+    this.globalEnv.define(
+      'isalnum',
+      new BuiltinFunction('isalnum', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('isalnum() requires a string', line, col);
+        return pyIsAlnum(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'isalpha',
+      new BuiltinFunction('isalpha', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('isalpha() requires a string', line, col);
+        return pyIsAlpha(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'isdigit',
+      new BuiltinFunction('isdigit', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('isdigit() requires a string', line, col);
+        return pyIsDigit(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'lower',
+      new BuiltinFunction('lower', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('lower() requires a string', line, col);
+        return pyLower(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'islower',
+      new BuiltinFunction('islower', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('islower() requires a string', line, col);
+        return pyIsLower(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'isupper',
+      new BuiltinFunction('isupper', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('isupper() requires a string', line, col);
+        return pyIsUpper(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'upper',
+      new BuiltinFunction('upper', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('upper() requires a string', line, col);
+        return pyUpper(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'title',
+      new BuiltinFunction('title', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('title() requires a string', line, col);
+        return pyTitle(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'swapcase',
+      new BuiltinFunction('swapcase', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('swapcase() requires a string', line, col);
+        return pySwapCase(String(args[0]));
+      })
+    );
+
+    this.globalEnv.define(
+      'count',
+      new BuiltinFunction('count', (_, args, __, line, col) => {
+        if (args.length < 2) throw new TypeError('count() requires target and element/substring', line, col);
+        const target = args[0];
+        const sub = args[1];
+        if (typeof target === 'string') {
+          const start = args[2] !== undefined ? Number(args[2]) : undefined;
+          const end = args[3] !== undefined ? Number(args[3]) : undefined;
+          return pyCount(target, String(sub), start, end);
+        }
+        if (Array.isArray(target)) {
+          const start = args[2] !== undefined ? Number(args[2]) : undefined;
+          const end = args[3] !== undefined ? Number(args[3]) : undefined;
+          return pyCount(target, sub, start, end, (a, b) => this.isEqual(a, b));
+        }
+        throw new TypeError(`'${typeof target}' count() support pannaadhu`, line, col);
+      })
+    );
+
+    // List & iterable math built-in functions
+    this.globalEnv.define(
+      'max',
+      new BuiltinFunction('max', (_, args, __, line, col) => {
+        try {
+          return pyMax(...args);
+        } catch (err: any) {
+          if (err.message.startsWith('ValueError')) throw new ValueError(err.message, line, col);
+          throw new TypeError(err.message, line, col);
+        }
+      })
+    );
+
+    this.globalEnv.define(
+      'min',
+      new BuiltinFunction('min', (_, args, __, line, col) => {
+        try {
+          return pyMin(...args);
+        } catch (err: any) {
+          if (err.message.startsWith('ValueError')) throw new ValueError(err.message, line, col);
+          throw new TypeError(err.message, line, col);
+        }
+      })
+    );
+
+    this.globalEnv.define(
+      'sum',
+      new BuiltinFunction('sum', (_, args, __, line, col) => {
+        if (args.length === 0) throw new TypeError('sum() expected at least 1 argument, got 0', line, col);
+        try {
+          return pySum(args[0], args[1] !== undefined ? Number(args[1]) : 0);
+        } catch (err: any) {
+          throw new TypeError(err.message, line, col);
+        }
+      })
+    );
+
+    this.globalEnv.define(
+      'append',
+      new BuiltinFunction('append', (_, args, __, line, col) => {
+        if (args.length < 2 || !Array.isArray(args[0])) throw new TypeError('append() requires list and value', line, col);
+        args[0].push(args[1]);
+        return null;
+      })
+    );
+
+    this.globalEnv.define(
+      'extend',
+      new BuiltinFunction('extend', (_, args, __, line, col) => {
+        if (args.length < 2 || !Array.isArray(args[0])) throw new TypeError('extend() requires list and iterable', line, col);
+        const target = args[0];
+        const iter = args[1];
+        if (Array.isArray(iter)) for (const x of iter) target.push(x);
+        else if (typeof iter === 'string') for (const x of iter) target.push(x);
+        else throw new TypeError('extend() argument must be iterable', line, col);
+        return null;
+      })
+    );
+
+    this.globalEnv.define(
+      'reverse',
+      new BuiltinFunction('reverse', (_, args, __, line, col) => {
+        if (args.length < 1 || !Array.isArray(args[0])) throw new TypeError('reverse() requires list', line, col);
+        args[0].reverse();
+        return null;
+      })
+    );
+
+    this.globalEnv.define(
+      'sort',
+      new BuiltinFunction('sort', async (evaluator, args, kwargs, line, col) => {
+        if (args.length < 1 || !Array.isArray(args[0])) throw new TypeError('sort() requires list', line, col);
+        const target = args[0];
+        const rev = kwargs['reverse'] !== undefined ? Boolean(kwargs['reverse']) : (args[1] ? Boolean(args[1]) : false);
+        let keyFn: any = undefined;
+        if (kwargs['key'] !== undefined) {
+          const k = kwargs['key'];
+          keyFn = async (item: any) => {
+            if (typeof k === 'object' && 'call' in k) return await k.call(evaluator, [item], {}, line, col);
+            if (typeof k === 'function') return await k(item);
+            return item;
+          };
+        }
+        await pySort(target, keyFn, rev);
+        return null;
       })
     );
 
@@ -492,9 +727,79 @@ export class Evaluator {
       case 'PassStatement':
         break;
 
+      case 'DeleteStatement':
+        await this.executeDelete(stmt);
+        break;
+
       default:
         break;
     }
+  }
+
+  private async executeDelete(stmt: DeleteStatement): Promise<void> {
+    const target = stmt.target;
+    if (target.type === 'IdentifierExpr') {
+      try {
+        this.currentEnv.remove(target.name);
+      } catch (err: any) {
+        if (err instanceof NameError) {
+          throw new RuntimeError(err.message, stmt.line, stmt.col);
+        }
+        throw err;
+      }
+      return;
+    }
+
+    if (target.type === 'IndexExpr') {
+      const obj = await this.evaluateExpression(target.object);
+      const idx = await this.evaluateExpression(target.index);
+
+      if (Array.isArray(obj)) {
+        let indexNum = Number(idx);
+        if (indexNum < 0) indexNum = obj.length + indexNum;
+        if (indexNum < 0 || indexNum >= obj.length) {
+          throw new IndexError(`list assignment index/del out of range: ${idx}`, stmt.line, stmt.col);
+        }
+        obj.splice(indexNum, 1);
+        return;
+      }
+
+      if (obj && typeof obj === 'object') {
+        const key = String(idx);
+        if (!(key in obj)) {
+          throw new KeyError(key, stmt.line, stmt.col);
+        }
+        delete obj[key];
+        return;
+      }
+
+      throw new TypeError(`'${typeof obj}' deletion support pannaadhu`, stmt.line, stmt.col);
+    }
+
+    if (target.type === 'MemberExpr') {
+      const obj = await this.evaluateExpression(target.object);
+      const prop = target.property;
+
+      if (obj instanceof TanglishInstance) {
+        if (obj.fields.has(prop)) {
+          obj.fields.delete(prop);
+          return;
+        }
+        throw new RuntimeError(`AttributeError: '${obj.klass.name}' instance-ku '${prop}' attribute kidayadhu`, stmt.line, stmt.col);
+      }
+
+      if (obj && typeof obj === 'object') {
+        if (!(prop in obj)) {
+          throw new RuntimeError(`AttributeError: '${typeof obj}' has no attribute '${prop}'`, stmt.line, stmt.col);
+        }
+        delete obj[prop];
+        return;
+      }
+
+      throw new TypeError(`'${typeof obj}' deletion support pannaadhu`, stmt.line, stmt.col);
+    }
+
+    throw new RuntimeError(`Ariyadha del target`, stmt.line, stmt.col);
   }
 
   private async executeAssign(stmt: AssignStatement): Promise<void> {
@@ -932,10 +1237,31 @@ export class Evaluator {
       if (prop === 'append') {
         return (val: any) => { obj.push(val); return null; };
       }
+      if (prop === 'extend') {
+        return (iterable: any) => {
+          if (Array.isArray(iterable)) {
+            for (const item of iterable) obj.push(item);
+          } else if (typeof iterable === 'string') {
+            for (const ch of iterable) obj.push(ch);
+          } else if (iterable && typeof iterable === 'object') {
+            for (const k of Object.keys(iterable)) obj.push(k);
+          } else {
+            throw new TypeError(`'${typeof iterable}' object is not iterable`, expr.line, expr.col);
+          }
+          return null;
+        };
+      }
       if (prop === 'pop') {
         return (i?: number) => {
-          if (i !== undefined) return obj.splice(i, 1)[0];
-          return obj.pop();
+          if (obj.length === 0) {
+            throw new IndexError('pop from empty list', expr.line, expr.col);
+          }
+          let idx = i !== undefined ? Number(i) : -1;
+          if (idx < 0) idx = obj.length + idx;
+          if (idx < 0 || idx >= obj.length) {
+            throw new IndexError(`pop index out of range: ${i}`, expr.line, expr.col);
+          }
+          return obj.splice(idx, 1)[0];
         };
       }
       if (prop === 'insert') {
@@ -943,13 +1269,97 @@ export class Evaluator {
       }
       if (prop === 'remove') {
         return (val: any) => {
-          const idx = obj.indexOf(val);
-          if (idx !== -1) obj.splice(idx, 1);
+          const idx = obj.findIndex(item => this.isEqual(item, val));
+          if (idx === -1) {
+            throw new ValueError(`list.remove(x): '${this.formatValue(val)}' list-la illai (x not in list)`, expr.line, expr.col);
+          }
+          obj.splice(idx, 1);
           return null;
         };
       }
       if (prop === 'clear') {
         return () => { obj.length = 0; return null; };
+      }
+      if (prop === 'index') {
+        return (x: any, start?: number, end?: number) => {
+          try {
+            return pyIndex(obj, x, start, end, (a, b) => this.isEqual(a, b));
+          } catch (err: any) {
+            throw new ValueError(err.message, expr.line, expr.col);
+          }
+        };
+      }
+      if (prop === 'reverse') {
+        return () => {
+          obj.reverse();
+          return null;
+        };
+      }
+      if (prop === 'sort') {
+        return async (kwargsOrKey?: any, maybeReverse?: any) => {
+          let keyFn: any = undefined;
+          let rev = false;
+
+          if (typeof kwargsOrKey === 'boolean') {
+            rev = kwargsOrKey;
+          } else if (kwargsOrKey) {
+            keyFn = async (item: any) => {
+              if (typeof kwargsOrKey === 'object' && 'call' in kwargsOrKey) {
+                return await kwargsOrKey.call(this, [item], {}, expr.line, expr.col);
+              }
+              if (typeof kwargsOrKey === 'function') {
+                return await kwargsOrKey(item);
+              }
+              return item;
+            };
+          }
+          if (typeof maybeReverse === 'boolean') {
+            rev = maybeReverse;
+          }
+
+          await pySort(obj, keyFn, rev);
+          return null;
+        };
+      }
+      if (prop === 'max') {
+        return () => {
+          try {
+            return pyMax(obj);
+          } catch (e: any) {
+            throw new ValueError(e.message, expr.line, expr.col);
+          }
+        };
+      }
+      if (prop === 'min') {
+        return () => {
+          try {
+            return pyMin(obj);
+          } catch (e: any) {
+            throw new ValueError(e.message, expr.line, expr.col);
+          }
+        };
+      }
+      if (prop === 'sum') {
+        return (start: number = 0) => {
+          try {
+            return pySum(obj, start);
+          } catch (e: any) {
+            throw new TypeError(e.message, expr.line, expr.col);
+          }
+        };
+      }
+      if (prop === 'count') {
+        return (val: any, start?: number, end?: number) =>
+          pyCount(
+            obj,
+            val,
+            start !== undefined ? Number(start) : undefined,
+            end !== undefined ? Number(end) : undefined,
+            (a, b) => this.isEqual(a, b)
+          );
+      }
+      if (prop === 'len') {
+        return () => obj.length;
       }
     }
 
@@ -959,6 +1369,7 @@ export class Evaluator {
       if (prop === 'values') return () => Object.values(obj);
       if (prop === 'items') return () => Object.entries(obj);
       if (prop === 'get') return (k: string, def: any = null) => (k in obj ? obj[k] : def);
+      if (prop === 'len') return () => Object.keys(obj).length;
 
       if (prop in obj) {
         const val = obj[prop];
@@ -971,11 +1382,41 @@ export class Evaluator {
 
     // Built-in string methods
     if (typeof obj === 'string') {
-      if (prop === 'upper') return () => obj.toUpperCase();
-      if (prop === 'lower') return () => obj.toLowerCase();
+      if (prop === 'len') return () => obj.length;
+      if (prop === 'capitalize') return () => pyCapitalize(obj);
+      if (prop === 'centre' || prop === 'center') {
+        return (width: number, fill = ' ') => pyCenter(obj, Number(width), String(fill));
+      }
+      if (prop === 'find') {
+        return (sub: string, start?: number, end?: number) =>
+          pyFind(
+            obj,
+            String(sub),
+            start !== undefined ? Number(start) : undefined,
+            end !== undefined ? Number(end) : undefined
+          );
+      }
+      if (prop === 'isalnum') return () => pyIsAlnum(obj);
+      if (prop === 'isalpha') return () => pyIsAlpha(obj);
+      if (prop === 'isdigit') return () => pyIsDigit(obj);
+      if (prop === 'lower') return () => pyLower(obj);
+      if (prop === 'islower') return () => pyIsLower(obj);
+      if (prop === 'isupper') return () => pyIsUpper(obj);
+      if (prop === 'upper') return () => pyUpper(obj);
+      if (prop === 'title') return () => pyTitle(obj);
+      if (prop === 'swapcase') return () => pySwapCase(obj);
+      if (prop === 'count') {
+        return (sub: string, start?: number, end?: number) =>
+          pyCount(
+            obj,
+            String(sub),
+            start !== undefined ? Number(start) : undefined,
+            end !== undefined ? Number(end) : undefined
+          );
+      }
       if (prop === 'split') return (sep = ' ') => obj.split(sep);
       if (prop === 'strip') return () => obj.trim();
-      if (prop === 'replace') return (a: string, b: string) => obj.replace(new RegExp(a, 'g'), b);
+      if (prop === 'replace') return (a: string, b: string) => obj.replaceAll(a, b);
     }
 
     throw new RuntimeError(`AttributeError: '${typeof obj}' has no attribute '${prop}'`, expr.line, expr.col);
