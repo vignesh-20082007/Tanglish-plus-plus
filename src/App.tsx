@@ -64,7 +64,7 @@ export function App() {
     if (isRunning) return;
 
     // Auto-fix any manual unindented block/loop code
-    const rawCode = code || currentTemplate.code;
+    const rawCode = code ?? currentTemplate.code;
     const formattedCode = formatTanglishCode(rawCode);
     if (formattedCode !== code) {
       setCode(formattedCode);

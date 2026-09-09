@@ -479,7 +479,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   );
 
   const lineCount = value ? value.split('\n').length : 1;
-  const isCodeEmpty = !value || value.trim() === '';
 
   return (
     <div className="flex flex-col h-full bg-[#030712] border border-slate-800 rounded-xl overflow-hidden flex-1 min-h-[260px]">
@@ -567,28 +566,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           }}
           className="h-full font-mono text-sm [&_.cm-editor]:h-full [&_.cm-scroller]:overflow-auto"
         />
-
-        {/* Empty State Banner (If code is cleared or empty) */}
-        {isCodeEmpty && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#030712]/95 z-10 p-6 text-center animate-in fade-in duration-150">
-            <FileCode className="w-12 h-12 text-amber-500/50 mb-3" />
-            <h3 className="text-white font-mono text-sm font-semibold">
-              Code Editor is Empty (Verumaiyaaga Irukku)
-            </h3>
-            <p className="text-slate-400 font-sans text-xs mt-1 max-w-sm">
-              Type your Tanglish++ code or click below to restore the starter template.
-            </p>
-            {onResetCode && (
-              <button
-                onClick={onResetCode}
-                className="mt-4 flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-mono font-bold text-xs rounded-xl shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>Load Template Code (Kuriyeedu Yetru)</span>
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Editor Status Bar */}
