@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { FileCode, Terminal as TerminalIcon, Rows2, Wand2 } from 'lucide-react';
 import { Header } from './components/Header';
 import { CodeEditor } from './components/CodeEditor';
 import { formatTanglishCode } from './utils/formatCode';
@@ -18,6 +19,7 @@ export function App() {
   const [fontSize, setFontSize] = useState(14);
   const [docsOpen, setDocsOpen] = useState(false);
   const [layoutMode, setLayoutMode] = useState<'split' | 'stacked'>('split');
+  const [mobileTab, setMobileTab] = useState<'editor' | 'terminal' | 'split'>('editor');
 
   // Input Modal state
   const [inputModalOpen, setInputModalOpen] = useState(false);
@@ -62,6 +64,11 @@ export function App() {
   // Run code
   const handleRun = async () => {
     if (isRunning) return;
+
+    // If on mobile editor tab, switch to terminal view so user sees execution immediately
+    if (typeof window !== 'undefined' && window.innerWidth < 768 && mobileTab === 'editor') {
+      setMobileTab('terminal');
+    }
 
     // Auto-fix any manual unindented block/loop code
     const rawCode = code ?? currentTemplate.code;
@@ -128,6 +135,9 @@ export function App() {
 
   const handleInsertSnippet = (snippet: string) => {
     setCode(prev => prev + '\n\n' + snippet);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setMobileTab('editor');
+    }
   };
 
   return (
@@ -149,20 +159,91 @@ export function App() {
         onToggleLayout={() => setLayoutMode(m => (m === 'split' ? 'stacked' : 'split'))}
       />
 
+      {/* Mobile Mode Sub-Navbar: Tabs & Quick Actions (< md screens) */}
+      <div className="flex md:hidden items-center justify-between px-2.5 py-1.5 bg-[#0B1120] border-b border-slate-800 select-none shrink-0 gap-2">
+        {/* View Switcher: Code / Terminal / Split */}
+        <div className="flex items-center gap-1 bg-[#050811] p-0.5 rounded-lg border border-slate-800">
+          <button
+            onClick={() => setMobileTab('editor')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono transition-all ${
+              mobileTab === 'editor'
+                ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <FileCode className="w-3.5 h-3.5 text-amber-400" />
+            <span>Code</span>
+          </button>
+
+          <button
+            onClick={() => setMobileTab('terminal')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono transition-all relative ${
+              mobileTab === 'terminal'
+                ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <TerminalIcon className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Output</span>
+            {isRunning ? (
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse ml-0.5"></span>
+            ) : hasError ? (
+              <span className="w-2 h-2 rounded-full bg-rose-400 ml-0.5"></span>
+            ) : output.length > 0 ? (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 ml-0.5"></span>
+            ) : null}
+          </button>
+
+          <button
+            onClick={() => setMobileTab('split')}
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono transition-all ${
+              mobileTab === 'split'
+                ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+            title="Split (Stacked) View"
+          >
+            <Rows2 className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Split</span>
+          </button>
+        </div>
+
+        {/* Mobile Format / Indent Quick Action */}
+        <button
+          onClick={() => {
+            const formatted = formatTanglishCode(code);
+            if (formatted !== code) setCode(formatted);
+          }}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#050811] hover:bg-slate-800 text-amber-400 hover:text-amber-300 border border-slate-800 text-xs font-mono transition-colors shrink-0"
+          title="Auto-Fix 4-Space Indentation"
+        >
+          <Wand2 className="w-3 h-3 text-amber-400" />
+          <span>Fix Indent</span>
+        </button>
+      </div>
+
       {/* Main IDE Workspace */}
       <main
-        className={`flex-1 p-2 sm:p-3 min-h-0 ${
+        className={`flex-1 p-1.5 sm:p-3 min-h-0 ${
           layoutMode === 'split'
-            ? 'flex flex-col md:flex-row gap-2.5 sm:gap-3 overflow-hidden'
-            : 'flex flex-col gap-2.5 sm:gap-3 overflow-y-auto'
+            ? 'flex flex-col md:flex-row gap-2 sm:gap-3 overflow-hidden'
+            : 'flex flex-col gap-2 sm:gap-3 overflow-y-auto'
         }`}
       >
-        {/* Left: Code Editor */}
+        {/* Code Editor Section */}
         <section
-          className={`flex flex-col min-h-0 ${
+          className={`min-h-0 ${
+            // Mobile tab visibility
+            mobileTab === 'editor'
+              ? 'flex flex-col flex-1 h-full'
+              : mobileTab === 'split'
+              ? 'flex flex-col h-1/2 flex-1'
+              : 'hidden md:flex md:flex-col'
+          } ${
+            // Desktop layout
             layoutMode === 'split'
-              ? 'flex-1 md:w-[55%] h-1/2 md:h-full'
-              : 'w-full h-[52%] min-h-[260px]'
+              ? 'md:w-[55%] md:h-full'
+              : 'md:w-full md:h-[52%] md:min-h-[260px]'
           }`}
         >
           <CodeEditor
@@ -173,12 +254,20 @@ export function App() {
           />
         </section>
 
-        {/* Right: Output Terminal */}
+        {/* Output Terminal Section */}
         <section
-          className={`flex flex-col min-h-0 ${
+          className={`min-h-0 ${
+            // Mobile tab visibility
+            mobileTab === 'terminal'
+              ? 'flex flex-col flex-1 h-full'
+              : mobileTab === 'split'
+              ? 'flex flex-col h-1/2 flex-1'
+              : 'hidden md:flex md:flex-col'
+          } ${
+            // Desktop layout
             layoutMode === 'split'
-              ? 'flex-1 md:w-[45%] h-1/2 md:h-full'
-              : 'w-full h-[48%] min-h-[240px]'
+              ? 'md:w-[45%] md:h-full'
+              : 'md:w-full md:h-[48%] md:min-h-[240px]'
           }`}
         >
           <Terminal

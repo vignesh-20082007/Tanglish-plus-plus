@@ -483,42 +483,45 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   return (
     <div className="flex flex-col h-full bg-[#030712] border border-slate-800 rounded-xl overflow-hidden flex-1 min-h-[260px]">
       {/* Editor Header */}
-      <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#050811] border-b border-slate-800 select-none shrink-0">
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
-          <FileCode className="w-4 h-4 text-amber-500" />
-          <span className="font-semibold text-white">main.tpp</span>
-          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30">
+      <div className="flex items-center justify-between px-2.5 sm:px-4 py-1.5 sm:py-2 bg-[#050811] border-b border-slate-800 select-none shrink-0 gap-1.5">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-mono text-slate-300 min-w-0">
+          <FileCode className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 shrink-0" />
+          <span className="font-semibold text-white truncate text-xs">main.tpp</span>
+          <span className="hidden sm:inline px-2 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30">
             Tanglish++
           </span>
-          <span className="text-emerald-400 text-[11px] hidden sm:inline font-mono">
+          <span className="text-emerald-400 text-[11px] hidden md:inline font-mono">
             Colon(:) Auto-Indent Active
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300 mr-1">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-mono text-slate-400 mr-1">
             <span>Ln {cursorPos.line}</span>
             <span>,</span>
             <span>Col {cursorPos.col}</span>
             <span className="text-slate-600">|</span>
             <span>{lineCount} lines</span>
           </div>
+          <span className="sm:hidden text-[10px] font-mono text-slate-500 mr-0.5">
+            {lineCount}L
+          </span>
 
           {/* Format Button */}
           <button
             onClick={handleFormat}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs font-mono text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs font-mono text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded transition-colors"
             title="Auto-Fix 4-Space Indentation (வடிவமை)"
           >
             {formatted ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400">Indented!</span>
+                <span className="text-emerald-400 text-[11px] sm:text-xs">Done</span>
               </>
             ) : (
               <>
                 <Wand2 className="w-3.5 h-3.5 text-amber-400" />
-                <span>Fix Indent</span>
+                <span className="text-[11px] sm:text-xs">Fix Indent</span>
               </>
             )}
           </button>
@@ -526,18 +529,18 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           {/* Copy Button */}
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
+            className="flex items-center gap-1 p-1 sm:px-2.5 sm:py-1 text-xs font-mono text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
             title="Copy Code"
           >
             {copied ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400">Copied</span>
+                <span className="hidden sm:inline text-emerald-400">Copied</span>
               </>
             ) : (
               <>
                 <Copy className="w-3.5 h-3.5" />
-                <span>Copy</span>
+                <span className="hidden sm:inline">Copy</span>
               </>
             )}
           </button>
@@ -569,15 +572,14 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       </div>
 
       {/* Editor Status Bar */}
-      <div className="px-3 sm:px-4 py-1.5 bg-[#050811] border-t border-slate-800 text-[11px] font-mono text-slate-400 flex items-center justify-between select-none shrink-0">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1 text-emerald-400">
-            <Sparkles className="w-3 h-3" />
-            <span>High-Contrast Crystal Clear • Colon(:) Auto-Indent • Zero Drift</span>
-          </span>
+      <div className="px-2.5 sm:px-4 py-1 sm:py-1.5 bg-[#050811] border-t border-slate-800 text-[10px] sm:text-[11px] font-mono text-slate-400 flex items-center justify-between select-none shrink-0 whitespace-nowrap overflow-hidden">
+        <div className="flex items-center gap-1.5 text-emerald-400 truncate">
+          <Sparkles className="w-3 h-3 shrink-0" />
+          <span className="hidden sm:inline">High-Contrast Crystal Clear • Colon(:) Auto-Indent • Zero Drift</span>
+          <span className="sm:hidden">Auto-Indent • Pythonic</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span>Tab: 4 spaces</span>
+        <div className="flex items-center gap-2 sm:gap-3 text-slate-500 shrink-0 ml-2">
+          <span>Tab: 4</span>
           <span>Chars: {value ? value.length : 0}</span>
         </div>
       </div>

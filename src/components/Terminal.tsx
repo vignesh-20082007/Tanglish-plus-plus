@@ -45,40 +45,49 @@ export const Terminal: React.FC<TerminalProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#050811] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex-1 min-h-[300px]">
+    <div className="flex flex-col h-full bg-[#050811] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex-1 min-h-[160px] sm:min-h-[260px]">
       {/* Terminal Title Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#0B1120] border-b border-slate-800 select-none">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block border border-red-400/40"></span>
-            <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block border border-amber-400/40"></span>
-            <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block border border-emerald-400/40"></span>
+      <div className="flex items-center justify-between px-2.5 sm:px-4 py-2 sm:py-2.5 bg-[#0B1120] border-b border-slate-800 select-none gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80 inline-block border border-red-400/40"></span>
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500/80 inline-block border border-amber-400/40"></span>
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500/80 inline-block border border-emerald-400/40"></span>
           </div>
-          <div className="h-4 w-px bg-slate-800 mx-1"></div>
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
+          <div className="h-3 sm:h-4 w-px bg-slate-800 mx-0.5 sm:mx-1"></div>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-mono text-slate-300">
             <TerminalIcon className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="font-semibold text-emerald-400">t++ terminal</span>
-            <span className="text-slate-500 text-[11px]">~/workspace</span>
+            <span className="font-semibold text-emerald-400 text-[11px] sm:text-xs">t++ terminal</span>
+            <span className="text-slate-500 text-[11px] hidden md:inline">~/workspace</span>
           </div>
         </div>
 
         {/* Action badges and buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Status Indicator */}
           {isRunning ? (
-            <span className="flex items-center gap-1.5 text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30 animate-pulse">
-              <Play className="w-3 h-3 fill-amber-300" />
-              <span>Running...</span>
+            <span className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-amber-500/30 animate-pulse">
+              <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-300" />
+              <span>
+                <span className="hidden sm:inline">Running...</span>
+                <span className="sm:hidden">Run</span>
+              </span>
             </span>
           ) : hasError ? (
-            <span className="flex items-center gap-1.5 text-[11px] font-mono text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-500/30">
-              <AlertCircle className="w-3 h-3" />
-              <span>Thavaru (Error)</span>
+            <span className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-rose-500/30">
+              <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span>
+                <span className="hidden sm:inline">Thavaru (Error)</span>
+                <span className="sm:hidden">Error</span>
+              </span>
             </span>
           ) : output.length > 0 ? (
-            <span className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
-              <CheckCircle2 className="w-3 h-3" />
-              <span>Mudinthathu (Success)</span>
+            <span className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-emerald-500/30">
+              <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span>
+                <span className="hidden sm:inline">Mudinthathu (Success)</span>
+                <span className="sm:hidden">Done</span>
+              </span>
             </span>
           ) : null}
 
@@ -93,7 +102,7 @@ export const Terminal: React.FC<TerminalProps> = ({
           {onReRun && (
             <button
               onClick={onReRun}
-              className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 rounded transition-colors"
+              className="p-1 sm:p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 rounded transition-colors"
               title="Run Code"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -103,7 +112,7 @@ export const Terminal: React.FC<TerminalProps> = ({
           {/* Copy button */}
           <button
             onClick={handleCopy}
-            className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition-colors"
+            className="p-1 sm:p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition-colors"
             title="Copy Terminal Output"
           >
             {copied ? (
@@ -116,7 +125,7 @@ export const Terminal: React.FC<TerminalProps> = ({
           {/* Clear button */}
           <button
             onClick={onClear}
-            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors"
+            className="p-1 sm:p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors"
             title="Clear Terminal"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -126,7 +135,7 @@ export const Terminal: React.FC<TerminalProps> = ({
 
       {/* Terminal Screen Body */}
       <div
-        className="flex-1 p-4 font-mono-code text-[13px] leading-relaxed overflow-y-auto select-text bg-[#030712] text-emerald-400 selection:bg-emerald-900/60 selection:text-emerald-200"
+        className="flex-1 p-3 sm:p-4 font-mono-code text-xs sm:text-[13px] leading-relaxed overflow-y-auto select-text bg-[#030712] text-emerald-400 selection:bg-emerald-900/60 selection:text-emerald-200"
         style={{ textShadow: '0 0 1px rgba(74, 222, 128, 0.4)' }}
       >
         {/* Startup Prompt */}
@@ -136,9 +145,9 @@ export const Terminal: React.FC<TerminalProps> = ({
         </div>
 
         {output.length === 0 && !isRunning && (
-          <div className="text-slate-600 italic py-8 text-center select-none">
+          <div className="text-slate-600 italic py-6 sm:py-8 text-center select-none">
             <p>Terminal output empty-aa irukku.</p>
-            <p className="text-xs mt-1 text-slate-700">Press the green &quot;RUN (IYAKKU)&quot; button to execute your Tanglish++ code.</p>
+            <p className="text-xs mt-1 text-slate-700">Press the green &quot;RUN&quot; button to execute your Tanglish++ code.</p>
           </div>
         )}
 
@@ -177,9 +186,11 @@ export const Terminal: React.FC<TerminalProps> = ({
       </div>
 
       {/* Terminal Footer Bar */}
-      <div className="px-4 py-1.5 bg-[#0B1120] border-t border-slate-900/90 text-[11px] font-mono text-slate-500 flex items-center justify-between select-none">
-        <span>Output Encoding: UTF-8 (Tamil + Tanglish)</span>
-        <label className="flex items-center gap-1.5 cursor-pointer hover:text-slate-300">
+      <div className="px-3 sm:px-4 py-1.5 bg-[#0B1120] border-t border-slate-900/90 text-[10px] sm:text-[11px] font-mono text-slate-500 flex items-center justify-between select-none">
+        <span className="truncate mr-2">
+          <span className="hidden sm:inline">Output Encoding: </span>UTF-8 (Tamil)
+        </span>
+        <label className="flex items-center gap-1.5 cursor-pointer hover:text-slate-300 shrink-0">
           <input
             type="checkbox"
             checked={autoScroll}
