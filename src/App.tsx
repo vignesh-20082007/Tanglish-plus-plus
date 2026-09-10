@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { FileCode, Terminal as TerminalIcon, Rows2, Wand2 } from 'lucide-react';
+import { FileCode, Terminal as TerminalIcon, Rows2 } from 'lucide-react';
 import { Header } from './components/Header';
 import { CodeEditor } from './components/CodeEditor';
 import { formatTanglishCode } from './utils/formatCode';
@@ -159,13 +159,13 @@ export function App() {
         onToggleLayout={() => setLayoutMode(m => (m === 'split' ? 'stacked' : 'split'))}
       />
 
-      {/* Mobile Mode Sub-Navbar: Tabs & Quick Actions (< md screens) */}
-      <div className="flex md:hidden items-center justify-between px-2.5 py-1.5 bg-[#0B1120] border-b border-slate-800 select-none shrink-0 gap-2">
+      {/* Mobile Mode Sub-Navbar: Tabs (< md screens) */}
+      <div className="flex md:hidden items-center justify-center px-2.5 py-1.5 bg-[#0B1120] border-b border-slate-800 select-none shrink-0">
         {/* View Switcher: Code / Terminal / Split */}
-        <div className="flex items-center gap-1 bg-[#050811] p-0.5 rounded-lg border border-slate-800">
+        <div className="grid grid-cols-3 gap-1 bg-[#050811] p-0.5 rounded-lg border border-slate-800 w-full max-w-md">
           <button
             onClick={() => setMobileTab('editor')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono transition-all ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-mono transition-all ${
               mobileTab === 'editor'
                 ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -177,7 +177,7 @@ export function App() {
 
           <button
             onClick={() => setMobileTab('terminal')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono transition-all relative ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-mono transition-all relative ${
               mobileTab === 'terminal'
                 ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -196,7 +196,7 @@ export function App() {
 
           <button
             onClick={() => setMobileTab('split')}
-            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono transition-all ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-mono transition-all ${
               mobileTab === 'split'
                 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
@@ -207,19 +207,6 @@ export function App() {
             <span>Split</span>
           </button>
         </div>
-
-        {/* Mobile Format / Indent Quick Action */}
-        <button
-          onClick={() => {
-            const formatted = formatTanglishCode(code);
-            if (formatted !== code) setCode(formatted);
-          }}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#050811] hover:bg-slate-800 text-amber-400 hover:text-amber-300 border border-slate-800 text-xs font-mono transition-colors shrink-0"
-          title="Auto-Fix 4-Space Indentation"
-        >
-          <Wand2 className="w-3 h-3 text-amber-400" />
-          <span>Fix Indent</span>
-        </button>
       </div>
 
       {/* Main IDE Workspace */}
