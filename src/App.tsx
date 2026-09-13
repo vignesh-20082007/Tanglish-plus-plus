@@ -130,7 +130,7 @@ export function App() {
   };
 
   const handleResetCode = () => {
-    setCode(currentTemplate.code || TEMPLATES[0].code);
+    setCode(currentTemplate?.code ?? '');
   };
 
   const handleInsertSnippet = (snippet: string) => {

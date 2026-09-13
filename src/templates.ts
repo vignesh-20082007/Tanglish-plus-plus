@@ -8,6 +8,13 @@ export interface CodeTemplate {
 
 export const TEMPLATES: CodeTemplate[] = [
   {
+    id: 'practice-pad',
+    name: '📝 Practice Pad (பயிற்சி தாள் - Blank)',
+    category: 'Practice',
+    description: 'Empty blank workspace for freehand coding practice and experimentation.',
+    code: '',
+  },
+  {
     id: 'multiplication-table',
     name: '1. Multiplication Table (வாய்ப்பாடு)',
     category: 'Loops & Math',
