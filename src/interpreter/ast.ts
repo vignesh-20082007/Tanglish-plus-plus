@@ -13,6 +13,9 @@ export type Statement =
   | TryCatchStatement
   | GlobalStatement
   | ImportStatement
+  | FromImportStatement
+  | IncludeStatement
+  | RaiseStatement
   | BreakStatement
   | ContinueStatement
   | PassStatement
@@ -110,6 +113,24 @@ export interface ImportStatement extends BaseNode {
   type: 'ImportStatement';
   moduleName: string;
   alias?: string;
+}
+
+export interface FromImportStatement extends BaseNode {
+  type: 'FromImportStatement';
+  moduleName: string;
+  items: { name: string; alias?: string }[];
+  isWildcard: boolean;
+}
+
+export interface IncludeStatement extends BaseNode {
+  type: 'IncludeStatement';
+  target: Expression;
+  alias?: string;
+}
+
+export interface RaiseStatement extends BaseNode {
+  type: 'RaiseStatement';
+  expression?: Expression;
 }
 
 export interface BreakStatement extends BaseNode {

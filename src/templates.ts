@@ -443,6 +443,76 @@ sollu("\\n==================================================")
 sollu("All list operations & del statements executed successfully!")
 `,
   },
+  {
+    id: 'modular-include-raise',
+    name: '12. Modules, Include & Exceptions (தொகுதிகள் & விதிவிலக்குகள்)',
+    category: 'Modules & Exceptions',
+    description: 'Demonstrates include keyword, selective from...import, custom exception raising, and official syntax.',
+    code: `# Tanglish++ (T++) - Modular Programming & Exception Raising
+# Featuring: include, from...import, engaerunthu...eduthuko, raise,
+#            oruvelaerunth, athuvuillina, lineda, ethumeilla
+
+sollu("==================================================")
+sollu("  Tanglish++ Include, Imports & Exceptions Demo")
+sollu("==================================================")
+
+# 1. include keyword for standard modules
+include ganitham as math
+sollu("\\n[1] include ganitham as math:")
+sollu("Square root of 256 :", math.sqrt(256))
+sollu("math.pow(2, 8)     :", math.pow(2, 8))
+
+# 2. Selective from...import
+from kanakkeduppu import mean, median
+scores = [78, 85, 92, 88, 95]
+sollu("\\n[2] from kanakkeduppu import mean, median:")
+sollu("Scores :", scores)
+sollu("Mean   :", mean(scores))
+sollu("Median :", median(scores))
+
+# 3. Creator's Official Syntax: engaerunthu ... eduthuko
+engaerunthu neramkaalam eduthuko thethi
+sollu("\\n[3] engaerunthu neramkaalam eduthuko thethi:")
+sollu("Inraiya thethi (Today):", thethi())
+
+# 4. Official condition keywords: oruvelaerunth, oruvelaillina, athuvuillina
+marks = 85
+sollu("\\n[4] Official Conditions:")
+oruvelaerunth marks >= 90:
+    sollu("Grade: Outstanding")
+oruvelaillina marks >= 75:
+    sollu("Grade: Distinction")
+athuvuillina:
+    sollu("Grade: Pass")
+
+# 5. lineda (lambda) and ethumeilla (None)
+cube = lineda x: x * x * x
+sollu("\\n[5] lineda & ethumeilla:")
+sollu("Cube of 5:", cube(5))
+status = ethumeilla
+sollu("Status is None:", status == onnumilla)
+
+# 6. Custom Exception Raising with raise & try/catch
+fun validate_account(balance, withdrawal):
+    iruntha withdrawal > balance:
+        raise "Panam pathala! (Insufficient balance for withdrawal)"
+    thirupikudu balance - withdrawal
+
+sollu("\\n[6] Exception Raising with raise:")
+muyarchi:
+    balance = 5000
+    sollu("Current Balance: Rs.", balance)
+    sollu("Attempting withdrawal of Rs. 8000...")
+    validate_account(balance, 8000)
+thavaru err:
+    sollu("Caught Exception:", err)
+kandippa:
+    sollu("Transaction check complete.")
+
+sollu("\\n==================================================")
+sollu("All modular and exception features executed successfully!")
+`,
+  },
 ];
 
 

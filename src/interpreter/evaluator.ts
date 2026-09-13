@@ -12,6 +12,9 @@ import {
   TryCatchStatement,
   GlobalStatement,
   ImportStatement,
+  FromImportStatement,
+  IncludeStatement,
+  RaiseStatement,
   LiteralExpr,
   IdentifierExpr,
   BinaryExpr,
@@ -25,8 +28,10 @@ import {
   LambdaExpr,
   DeleteStatement,
 } from './ast';
+import { Lexer } from './lexer';
+import { Parser } from './parser';
 import { Environment, NameError } from './environment';
-import { createBuiltinModules, ExitException } from './modules';
+import { createBuiltinModules, ExitException, globalVFS } from './modules';
 import {
   pyLen,
   pyCapitalize,
@@ -62,13 +67,18 @@ export class ReturnSignal {
 export class BreakSignal {}
 export class ContinueSignal {}
 
-// Tanglish Runtime Errors
+// Tanglish Runtime Errors with Bilingual Tamil-English Definitions
 export class RuntimeError extends Error {
   line?: number;
   col?: number;
-  constructor(message: string, line?: number, col?: number) {
-    super(line !== undefined ? `RuntimeError [Line ${line}, Col ${col}]: ${message}` : `RuntimeError: ${message}`);
-    this.name = 'RuntimeError';
+  rawMessage: string;
+  errorType: string;
+
+  constructor(message: string, line?: number, col?: number, errorType = 'SeyalMuraiThavaru (RuntimeError)') {
+    super(line !== undefined ? `${errorType} [Line ${line}, Col ${col}]: ${message}` : `${errorType}: ${message}`);
+    this.name = errorType;
+    this.rawMessage = message;
+    this.errorType = errorType;
     this.line = line;
     this.col = col;
   }
@@ -76,43 +86,43 @@ export class RuntimeError extends Error {
 
 export class TypeError extends RuntimeError {
   constructor(message: string, line?: number, col?: number) {
-    super(`TypeError: ${message}`, line, col);
-    this.name = 'TypeError';
+    super(message, line, col, 'VagaiThavaru (TypeError)');
   }
 }
 
 export class ValueError extends RuntimeError {
   constructor(message: string, line?: number, col?: number) {
-    super(`ValueError: ${message}`, line, col);
-    this.name = 'ValueError';
+    super(message, line, col, 'MathippuThavaru (ValueError)');
   }
 }
 
 export class IndexError extends RuntimeError {
   constructor(message: string, line?: number, col?: number) {
-    super(`IndexError: ${message}`, line, col);
-    this.name = 'IndexError';
+    super(message, line, col, 'KuriyeeduThavaru (IndexError)');
   }
 }
 
 export class KeyError extends RuntimeError {
   constructor(key: string, line?: number, col?: number) {
-    super(`KeyError: '${key}' dictionary-il illai (key not found)`, line, col);
-    this.name = 'KeyError';
+    super(`'${key}' dictionary-il illai (key not found in dictionary)`, line, col, 'ThiravukolThavaru (KeyError)');
   }
 }
 
 export class ZeroDivisionError extends RuntimeError {
   constructor(line?: number, col?: number) {
-    super(`ZeroDivisionError: Poojiyamal vakuka mudiyadhu (division by zero)`, line, col);
-    this.name = 'ZeroDivisionError';
+    super('Poojiyathaal vagukka mudiyadhu (division by zero)', line, col, 'PoojiyathalVaguthalThavaru (ZeroDivisionError)');
   }
 }
 
 export class ImportError extends RuntimeError {
   constructor(moduleName: string, line?: number, col?: number) {
-    super(`ImportError: '${moduleName}' module kandupidikka mudiyala (module not found)`, line, col);
-    this.name = 'ImportError';
+    super(`'${moduleName}' module kandupidikka mudiyala (module not found)`, line, col, 'IrakkumaanaThavaru (ImportError)');
+  }
+}
+
+export class AttributeError extends RuntimeError {
+  constructor(typeOrObj: string, prop: string, line?: number, col?: number) {
+    super(`'${typeOrObj}' has no attribute '${prop}' (gunam illai)`, line, col, 'GunamThavaru (AttributeError)');
   }
 }
 
@@ -285,6 +295,19 @@ export class Evaluator {
         const promptText = args.length > 0 ? this.formatValue(args[0]) : '';
         const inputResult = await this.onRequestInput(promptText);
         return inputResult;
+      })
+    );
+
+    // Aliases for print and input
+    this.globalEnv.define('print', this.globalEnv.lookup('sollu'));
+    this.globalEnv.define('input', this.globalEnv.lookup('kelu'));
+
+    // include() builtin function
+    this.globalEnv.define(
+      'include',
+      new BuiltinFunction('include', async (evaluator, args, kwargs, line, col) => {
+        if (args.length === 0) throw new ValueError('include() requires module name or file path', line, col);
+        return await evaluator.executeIncludeTarget(args[0], kwargs['as'], line, col);
       })
     );
 
@@ -635,6 +658,9 @@ export class Evaluator {
       return `<builtin fun ${val.name}>`;
     }
     if (typeof val === 'object') {
+      if ('_isError' in val || 'rawMessage' in val || val instanceof Error) {
+        return val.rawMessage || val.message || String(val);
+      }
       const pairs = Object.entries(val).map(([k, v]) => `'${k}': ${this.formatValue(v)}`);
       return '{' + pairs.join(', ') + '}';
     }
@@ -716,6 +742,18 @@ export class Evaluator {
 
       case 'ImportStatement':
         this.executeImport(stmt);
+        break;
+
+      case 'FromImportStatement':
+        this.executeFromImport(stmt);
+        break;
+
+      case 'IncludeStatement':
+        await this.executeInclude(stmt);
+        break;
+
+      case 'RaiseStatement':
+        await this.executeRaise(stmt);
         break;
 
       case 'BreakStatement':
@@ -965,7 +1003,15 @@ export class Evaluator {
       }
       const catchEnv = new Environment(this.currentEnv);
       if (stmt.errorVar) {
-        catchEnv.define(stmt.errorVar, err.message || String(err));
+        const errorObj = {
+          _isError: true,
+          message: err.rawMessage || err.message || String(err),
+          type: err.errorType || err.name || 'RuntimeError',
+          line: err.line,
+          col: err.col,
+          toString: () => err.rawMessage || err.message || String(err),
+        };
+        catchEnv.define(stmt.errorVar, errorObj);
       }
       await this.executeBlock(stmt.catchBlock, catchEnv);
     } finally {
@@ -982,6 +1028,90 @@ export class Evaluator {
     }
     const targetName = stmt.alias || stmt.moduleName;
     this.currentEnv.define(targetName, mod);
+  }
+
+  private executeFromImport(stmt: FromImportStatement): void {
+    const mod = this.modules[stmt.moduleName];
+    if (!mod) {
+      throw new ImportError(stmt.moduleName, stmt.line, stmt.col);
+    }
+
+    if (stmt.isWildcard) {
+      for (const [key, val] of Object.entries(mod)) {
+        this.currentEnv.define(key, val);
+      }
+      return;
+    }
+
+    for (const item of stmt.items) {
+      if (!(item.name in mod)) {
+        throw new ImportError(
+          `'${item.name}' module '${stmt.moduleName}'-la kandupidikka mudiyala`,
+          stmt.line,
+          stmt.col
+        );
+      }
+      const targetName = item.alias || item.name;
+      this.currentEnv.define(targetName, mod[item.name]);
+    }
+  }
+
+  public async executeIncludeTarget(targetVal: any, alias?: string, line?: number, col?: number): Promise<any> {
+    const targetStr = String(targetVal).trim();
+
+    // 1. Check if it's a known module name (e.g. "ganitham", "math", "os", "sqlite3")
+    if (targetStr in this.modules) {
+      const mod = this.modules[targetStr];
+      const targetName = alias || targetStr;
+      this.currentEnv.define(targetName, mod);
+      return mod;
+    }
+
+    // 2. Check Virtual File System if file path (e.g. "my_project/app.tpp", "/home/user/program.tpp")
+    let fileContent: string | null = null;
+    const vfs = (this.modules['os'] && (this.modules['os'] as any)._vfs) || globalVFS;
+    if (vfs) {
+      const node = vfs.getNode(targetStr) ||
+                   vfs.getNode('/home/user/' + targetStr) ||
+                   vfs.getNode('/' + targetStr) ||
+                   (targetStr.endsWith('.tpp') ? null : (vfs.getNode(targetStr + '.tpp') || vfs.getNode('/home/user/' + targetStr + '.tpp')));
+      if (node && node.type === 'file' && node.content !== undefined) {
+        fileContent = node.content;
+      }
+    }
+
+    if (fileContent !== null) {
+      const lexer = new Lexer(fileContent);
+      const tokens = lexer.tokenize();
+      const parser = new Parser(tokens);
+      const ast = parser.parse();
+      await this.executeBlock(ast.body, this.currentEnv);
+      return true;
+    }
+
+    // 3. Fallback: throw import error
+    throw new ImportError(targetStr, line, col);
+  }
+
+  private async executeInclude(stmt: IncludeStatement): Promise<void> {
+    let targetVal: any;
+    if (stmt.target.type === 'IdentifierExpr') {
+      targetVal = stmt.target.name;
+    } else {
+      targetVal = await this.evaluateExpression(stmt.target);
+    }
+    await this.executeIncludeTarget(targetVal, stmt.alias, stmt.line, stmt.col);
+  }
+
+  private async executeRaise(stmt: RaiseStatement): Promise<void> {
+    if (stmt.expression) {
+      const val = await this.evaluateExpression(stmt.expression);
+      if (val instanceof RuntimeError) {
+        throw val;
+      }
+      throw new RuntimeError(String(val), stmt.line, stmt.col);
+    }
+    throw new RuntimeError('Thavaru ezhupappattathu (Runtime exception raised)', stmt.line, stmt.col);
   }
 
   // --- Evaluate Expressions ---
@@ -1363,14 +1493,9 @@ export class Evaluator {
       }
     }
 
-    // Built-in dict methods
+    // Object / Dictionary property and method access
     if (obj && typeof obj === 'object' && !(obj instanceof TanglishClass)) {
-      if (prop === 'keys') return () => Object.keys(obj);
-      if (prop === 'values') return () => Object.values(obj);
-      if (prop === 'items') return () => Object.entries(obj);
-      if (prop === 'get') return (k: string, def: any = null) => (k in obj ? obj[k] : def);
-      if (prop === 'len') return () => Object.keys(obj).length;
-
+      // 1. Check direct property or method on object (e.g. response.status_code, kettuko.get, module exports)
       if (prop in obj) {
         const val = obj[prop];
         if (typeof val === 'function') {
@@ -1378,6 +1503,13 @@ export class Evaluator {
         }
         return val;
       }
+
+      // 2. Built-in dict helper methods (only if not directly defined on the object)
+      if (prop === 'keys') return () => Object.keys(obj);
+      if (prop === 'values') return () => Object.values(obj);
+      if (prop === 'items') return () => Object.entries(obj);
+      if (prop === 'get') return (k: string, def: any = null) => (k in obj ? obj[k] : def);
+      if (prop === 'len') return () => Object.keys(obj).length;
     }
 
     // Built-in string methods
@@ -1419,7 +1551,7 @@ export class Evaluator {
       if (prop === 'replace') return (a: string, b: string) => obj.replaceAll(a, b);
     }
 
-    throw new RuntimeError(`AttributeError: '${typeof obj}' has no attribute '${prop}'`, expr.line, expr.col);
+    throw new AttributeError(typeof obj, prop, expr.line, expr.col);
   }
 
   private isTruthy(val: any): boolean {

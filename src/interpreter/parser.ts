@@ -14,6 +14,9 @@ import {
   TryCatchStatement,
   GlobalStatement,
   ImportStatement,
+  FromImportStatement,
+  IncludeStatement,
+  RaiseStatement,
   BreakStatement,
   ContinueStatement,
   PassStatement,
@@ -99,6 +102,12 @@ export class Parser {
       case TokenType.EDUTHU_VAA:
       case TokenType.KONDU_VA:
         return this.parseImportStatement();
+      case TokenType.FROM:
+        return this.parseFromImportStatement();
+      case TokenType.INCLUDE:
+        return this.parseIncludeStatement();
+      case TokenType.RAISE:
+        return this.parseRaiseStatement();
       case TokenType.NIRUVA:
         this.advance();
         this.expectStatementTerminator();
@@ -399,6 +408,113 @@ export class Parser {
       type: 'ImportStatement',
       moduleName: modToken.value,
       alias,
+      line: token.line,
+      col: token.col,
+    };
+  }
+
+  private parseFromImportStatement(): FromImportStatement {
+    const token = this.advance(); // consume 'from' or 'engaerunthu'
+    const modToken = this.consume(
+      TokenType.IDENTIFIER,
+      "Module peyar thevai (expected module name after 'from' / 'engaerunthu')"
+    );
+
+    // Consume 'import' or 'eduthu_vaa' or 'kondu_va'
+    if (
+      this.check(TokenType.IMPORT) ||
+      this.check(TokenType.EDUTHU_VAA) ||
+      this.check(TokenType.KONDU_VA)
+    ) {
+      this.advance();
+    } else {
+      throw new ParserError(
+        "'import' alladhu 'eduthuko' thevai (expected 'import' or 'eduthuko')",
+        this.peek().line,
+        this.peek().col
+      );
+    }
+
+    // Check for wildcard '*'
+    if (this.match(TokenType.MULTIPLY)) {
+      this.expectStatementTerminator();
+      return {
+        type: 'FromImportStatement',
+        moduleName: modToken.value,
+        items: [],
+        isWildcard: true,
+        line: token.line,
+        col: token.col,
+      };
+    }
+
+    const items: { name: string; alias?: string }[] = [];
+    do {
+      const nameToken = this.consume(
+        TokenType.IDENTIFIER,
+        "Import seyyum peyar thevai (expected imported item name)"
+      );
+      let alias: string | undefined = undefined;
+      if (this.check(TokenType.IDENTIFIER) && this.peek().value === 'as') {
+        this.advance();
+        alias = this.consume(TokenType.IDENTIFIER, "Alias peyar thevai").value;
+      }
+      items.push({ name: nameToken.value, alias });
+    } while (this.match(TokenType.COMMA));
+
+    this.expectStatementTerminator();
+    return {
+      type: 'FromImportStatement',
+      moduleName: modToken.value,
+      items,
+      isWildcard: false,
+      line: token.line,
+      col: token.col,
+    };
+  }
+
+  private parseIncludeStatement(): IncludeStatement {
+    const token = this.advance(); // consume 'include'
+    let target: Expression;
+
+    if (this.check(TokenType.STRING)) {
+      const strTok = this.advance();
+      target = { type: 'LiteralExpr', value: strTok.value, rawType: 'string', line: strTok.line, col: strTok.col };
+    } else if (this.check(TokenType.IDENTIFIER)) {
+      const idTok = this.advance();
+      target = { type: 'IdentifierExpr', name: idTok.value, line: idTok.line, col: idTok.col };
+    } else {
+      target = this.parseExpression();
+    }
+
+    let alias: string | undefined = undefined;
+    if (this.check(TokenType.IDENTIFIER) && this.peek().value === 'as') {
+      this.advance();
+      alias = this.consume(TokenType.IDENTIFIER, "Alias peyar thevai").value;
+    }
+
+    this.expectStatementTerminator();
+    return {
+      type: 'IncludeStatement',
+      target,
+      alias,
+      line: token.line,
+      col: token.col,
+    };
+  }
+
+  private parseRaiseStatement(): RaiseStatement {
+    const token = this.advance(); // consume 'raise' or 'thavaru_kelu'
+    let expression: Expression | undefined = undefined;
+
+    if (!this.check(TokenType.NEWLINE) && !this.check(TokenType.EOF) && !this.check(TokenType.SEMICOLON)) {
+      expression = this.parseExpression();
+    }
+
+    this.expectStatementTerminator();
+    return {
+      type: 'RaiseStatement',
+      expression,
       line: token.line,
       col: token.col,
     };
