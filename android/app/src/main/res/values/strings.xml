@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tanglish++ IDE</string>
+    <string name="title_activity_main">Tanglish++ IDE</string>
+    <string name="package_name">com.tanglish.ide</string>
+    <string name="custom_url_scheme">com.tanglish.ide</string>
+</resources>

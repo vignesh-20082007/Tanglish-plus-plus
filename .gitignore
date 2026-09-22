@@ -23,3 +23,14 @@ dist-ssr
 *.sln
 *.sw?
 push-to-github.bat
+
+# Desktop & Mobile build outputs
+release/
+app-downloads/
+public/downloads/
+android/local.properties
+android/.gradle/
+android/app/build/
+android/build/
+test-*.png
+temp-*/

@@ -11,6 +11,7 @@ import {
   Box,
   Cpu,
 } from 'lucide-react';
+import { TANGLISH_LOGO_BASE64 } from '../assets/logoData';
 
 interface DocsSidebarProps {
   isOpen: boolean;
@@ -591,6 +592,7 @@ export const DocsSidebar: React.FC<DocsSidebarProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [logoError, setLogoError] = useState(false);
 
   if (!isOpen) return null;
 
@@ -617,11 +619,20 @@ export const DocsSidebar: React.FC<DocsSidebarProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 bg-[#0E1528] border-b border-slate-800">
         <div className="flex items-center gap-2.5">
-          <img
-            src="/tanglish-logo.png"
-            alt="Tanglish++ Logo"
-            className="w-8 h-8 rounded-lg shadow-md ring-1 ring-cyan-400/30 object-cover"
-          />
+          {!logoError ? (
+            <img
+              src={TANGLISH_LOGO_BASE64}
+              alt="Tanglish++ Logo"
+              onError={() => setLogoError(true)}
+              className="w-8 h-8 rounded-lg shadow-md ring-1 ring-cyan-400/30 object-cover"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 via-emerald-500 to-amber-400 p-[1.5px] shadow-md ring-1 ring-cyan-400/30">
+              <div className="w-full h-full bg-[#0A0F1D] rounded-[6px] flex items-center justify-center">
+                <span className="font-black text-[10px] text-amber-400 font-mono tracking-tighter">T++</span>
+              </div>
+            </div>
+          )}
           <div>
             <h2 className="text-sm font-bold text-slate-100 flex items-center gap-2">
               <span>Tanglish++ Reference Guide</span>

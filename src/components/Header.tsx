@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Play,
   Square,
@@ -10,8 +10,10 @@ import {
   ZoomOut,
   Columns2,
   Rows2,
+  Download,
 } from 'lucide-react';
 import { TEMPLATES, CodeTemplate } from '../templates';
+import { TANGLISH_LOGO_BASE64 } from '../assets/logoData';
 
 interface HeaderProps {
   onRun: () => void;
@@ -21,6 +23,7 @@ interface HeaderProps {
   onSelectTemplate: (template: CodeTemplate) => void;
   onToggleDocs: () => void;
   docsOpen: boolean;
+  onToggleDownload?: () => void;
   fontSize: number;
   onIncreaseFontSize: () => void;
   onDecreaseFontSize: () => void;
@@ -37,6 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectTemplate,
   onToggleDocs,
   docsOpen,
+  onToggleDownload,
   fontSize,
   onIncreaseFontSize,
   onDecreaseFontSize,
@@ -44,17 +48,28 @@ export const Header: React.FC<HeaderProps> = ({
   layoutMode = 'split',
   onToggleLayout,
 }) => {
+  const [logoError, setLogoError] = useState(false);
+
   return (
     <header className="bg-[#0B1120] border-b border-slate-800 px-2 sm:px-3 py-1.5 sm:py-2 select-none shrink-0 z-20">
       <div className="flex items-center justify-between gap-1.5 sm:gap-3 w-full">
         {/* Left: Branding & Official Logo */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <div className="relative group">
-            <img
-              src="/tanglish-logo.png"
-              alt="Tanglish++ Logo"
-              className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl shadow-lg shadow-cyan-900/40 ring-1 ring-cyan-400/30 object-cover transition-transform group-hover:scale-105"
-            />
+            {!logoError ? (
+              <img
+                src={TANGLISH_LOGO_BASE64}
+                alt="Tanglish++ Logo"
+                onError={() => setLogoError(true)}
+                className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl shadow-lg shadow-cyan-900/40 ring-1 ring-cyan-400/30 object-cover transition-transform group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br from-cyan-500 via-emerald-500 to-amber-400 p-[1.5px] shadow-lg shadow-cyan-900/40 ring-1 ring-cyan-400/30">
+                <div className="w-full h-full bg-[#0B1120] rounded-[6px] sm:rounded-[10px] flex items-center justify-center">
+                  <span className="font-black text-[10px] sm:text-xs text-amber-400 font-mono tracking-tighter">T++</span>
+                </div>
+              </div>
+            )}
             <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500 border-2 border-[#0B1120]"></div>
           </div>
 
@@ -186,6 +201,19 @@ export const Header: React.FC<HeaderProps> = ({
             <BookOpen className="w-3.5 h-3.5" />
             <span className="hidden sm:inline text-xs">Docs</span>
           </button>
+
+          {/* Download Native App Button */}
+          {onToggleDownload && (
+            <button
+              onClick={onToggleDownload}
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-mono font-bold text-cyan-300 hover:text-white bg-gradient-to-r from-cyan-950/70 via-slate-900 to-emerald-950/70 hover:from-cyan-900/90 hover:to-emerald-900/90 border border-cyan-500/40 hover:border-cyan-400 rounded-lg sm:rounded-xl shadow-sm shadow-cyan-500/20 transition-all cursor-pointer group shrink-0"
+              title="Download Tanglish++ IDE for Windows (.exe) and Android (.apk)"
+            >
+              <Download className="w-3.5 h-3.5 text-cyan-400 transition-transform group-hover:-translate-y-0.5" />
+              <span className="hidden sm:inline text-xs">Download App</span>
+              <span className="sm:hidden text-xs">App</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

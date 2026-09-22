@@ -6,6 +6,7 @@ import { formatTanglishCode } from './utils/formatCode';
 import { Terminal } from './components/Terminal';
 import { InputModal } from './components/InputModal';
 import { DocsSidebar } from './components/DocsSidebar';
+import { DownloadModal } from './components/DownloadModal';
 import { TEMPLATES, CodeTemplate } from './templates';
 import { runTanglishCode } from './interpreter';
 
@@ -18,6 +19,7 @@ export function App() {
   const [hasError, setHasError] = useState(false);
   const [fontSize, setFontSize] = useState(14);
   const [docsOpen, setDocsOpen] = useState(false);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const [layoutMode, setLayoutMode] = useState<'split' | 'stacked'>('split');
   const [mobileTab, setMobileTab] = useState<'editor' | 'terminal' | 'split'>('editor');
 
@@ -151,6 +153,7 @@ export function App() {
         onSelectTemplate={handleSelectTemplate}
         onToggleDocs={() => setDocsOpen(prev => !prev)}
         docsOpen={docsOpen}
+        onToggleDownload={() => setDownloadModalOpen(prev => !prev)}
         fontSize={fontSize}
         onIncreaseFontSize={() => setFontSize(f => Math.min(22, f + 1))}
         onDecreaseFontSize={() => setFontSize(f => Math.max(11, f - 1))}
@@ -281,6 +284,12 @@ export function App() {
         isOpen={docsOpen}
         onClose={() => setDocsOpen(false)}
         onInsertSnippet={handleInsertSnippet}
+      />
+
+      {/* Native App Download Modal (Windows .exe & Android .apk) */}
+      <DownloadModal
+        isOpen={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
       />
     </div>
   );
