@@ -27,7 +27,8 @@ push-to-github.bat
 # Desktop & Mobile build outputs
 release/
 app-downloads/
-public/downloads/
+public/downloads/*
+!public/downloads/Tanglish-IDE.apk
 android/local.properties
 android/.gradle/
 android/app/build/

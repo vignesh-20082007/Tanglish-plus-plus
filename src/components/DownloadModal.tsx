@@ -150,7 +150,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose })
               {/* Windows Download Buttons */}
               <div className="space-y-2 pt-2 border-t border-slate-800/80">
                 <a
-                  href="./downloads/Tanglish-IDE-Portable.exe"
+                  href="/downloads/Tanglish-IDE-Portable.exe"
                   download="Tanglish-IDE-Portable.exe"
                   onClick={() => triggerDownload('Tanglish-IDE-Portable.exe')}
                   className="flex items-center justify-between w-full px-3.5 py-2 rounded-xl text-xs font-mono font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 active:bg-cyan-500 transition-all shadow-md shadow-cyan-500/25 group cursor-pointer"
@@ -164,7 +164,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose })
                 </a>
 
                 <a
-                  href="./downloads/Tanglish-IDE-Setup.exe"
+                  href="/downloads/Tanglish-IDE-Setup.exe"
                   download="Tanglish-IDE-Setup.exe"
                   onClick={() => triggerDownload('Tanglish-IDE-Setup.exe')}
                   className="flex items-center justify-between w-full px-3.5 py-2 rounded-xl text-xs font-mono text-slate-200 bg-slate-800/80 hover:bg-slate-700 hover:text-white border border-slate-700 transition-all group cursor-pointer"
@@ -228,7 +228,7 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose })
               {/* Android Download Button */}
               <div className="space-y-2 pt-2 border-t border-slate-800/80">
                 <a
-                  href="./downloads/Tanglish-IDE.apk"
+                  href="/downloads/Tanglish-IDE.apk"
                   download="Tanglish-IDE.apk"
                   onClick={() => triggerDownload('Tanglish-IDE.apk')}
                   className="flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-xs font-mono font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 active:bg-emerald-500 transition-all shadow-md shadow-emerald-500/25 group cursor-pointer"
