@@ -43,9 +43,11 @@ export enum TokenType {
   INCLUDE = 'INCLUDE',         // include
   FROM = 'FROM',               // from / engaerunthu
   RAISE = 'RAISE',             // raise / thavaru_kelu
-  NIRUVA = 'NIRUVA',           // break
+  NIRUTHU = 'NIRUTHU',         // break
+  NIRUVA = 'NIRUTHU',          // backward-compatibility alias for niruthu
   THODARU = 'THODARU',         // continue
-  PASS = 'PASS',               // pass
+  ETHUMPANNATHA = 'ETHUMPANNATHA', // pass / ethumpannatha
+  PASS = 'ETHUMPANNATHA',          // backward-compatibility alias for ethumpannatha
   DEL = 'DEL',                 // del / azhi
 
   // Operators
@@ -115,14 +117,16 @@ export const KEYWORDS: Record<string, TokenType> = {
   in: TokenType.ULLA,
   irukkura_varai: TokenType.IRUKKURA_VARAI,
   while: TokenType.IRUKKURA_VARAI,
-  niruva: TokenType.NIRUVA,
-  neruthu: TokenType.NIRUVA,
-  break: TokenType.NIRUVA,
+  niruthu: TokenType.NIRUTHU,
+  neruthu: TokenType.NIRUTHU,
+  niruva: TokenType.NIRUTHU,
+  break: TokenType.NIRUTHU,
   thodaru: TokenType.THODARU,
   neecontinue: TokenType.THODARU,
   continue: TokenType.THODARU,
-  pass: TokenType.PASS,
-  ethupannatha: TokenType.PASS,
+  ethumpannatha: TokenType.ETHUMPANNATHA,
+  ethupannatha: TokenType.ETHUMPANNATHA,
+  pass: TokenType.ETHUMPANNATHA,
 
   // Functions & Lambdas
   fun: TokenType.FUN,

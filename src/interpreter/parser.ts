@@ -108,6 +108,7 @@ export class Parser {
         return this.parseIncludeStatement();
       case TokenType.RAISE:
         return this.parseRaiseStatement();
+      case TokenType.NIRUTHU:
       case TokenType.NIRUVA:
         this.advance();
         this.expectStatementTerminator();
@@ -116,6 +117,7 @@ export class Parser {
         this.advance();
         this.expectStatementTerminator();
         return { type: 'ContinueStatement', line: token.line, col: token.col };
+      case TokenType.ETHUMPANNATHA:
       case TokenType.PASS:
         this.advance();
         this.expectStatementTerminator();
@@ -280,7 +282,7 @@ export class Parser {
         if (this.check(TokenType.DEDENT)) break;
         if (this.check(TokenType.FUN) || this.check(TokenType.SEYAL)) {
           methods.push(this.parseFunctionDef());
-        } else if (this.match(TokenType.PASS)) {
+        } else if (this.match(TokenType.ETHUMPANNATHA) || this.match(TokenType.PASS)) {
           this.expectStatementTerminator();
         } else {
           throw new ParserError(
@@ -294,7 +296,7 @@ export class Parser {
       this.consume(TokenType.DEDENT, "Dedent thevai (expected dedent closing class)");
     } else {
       // Single line pass or method
-      if (this.match(TokenType.PASS)) {
+      if (this.match(TokenType.ETHUMPANNATHA) || this.match(TokenType.PASS)) {
         this.expectStatementTerminator();
       } else if (this.check(TokenType.FUN) || this.check(TokenType.SEYAL)) {
         methods.push(this.parseFunctionDef());

@@ -54,13 +54,18 @@ sollu("lineda 9:", sq(9))
 empty_val = ethumeilla
 sollu("Is None:", empty_val == onnumilla)
 
-# Test neruthu (break), neecontinue (continue), apro (and), illa (not)
+# Test niruthu (break), neecontinue (continue), apro (and), illa (not)
 varisaiya i kulla range(1, 10):
     iruntha (i == 2) apro (illa (i == 3)):
         neecontinue
     iruntha i == 4:
         sollu("Breaking at:", i)
-        neruthu
+        niruthu
+
+# Test ethumpannatha (pass)
+iruntha 10 > 5:
+    ethumpannatha
+sollu("ethumpannatha executed successfully")
 `;
   const res3 = await runTanglishCode({ source: code3, onPrint: capture });
   console.log('Result 3:', res3.success ? 'PASS' : 'FAIL\n' + res3.error, output.join(''));

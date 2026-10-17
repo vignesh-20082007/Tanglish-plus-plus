@@ -54,6 +54,9 @@ Tanglish++ (T++) is a programming language inspired by Python that uses natural 
 | `illana:` | `else:` | Fallback block |
 | `varisaiya i kulla range(1, 11):` | `for i in range(1, 11):` | Loop over ranges or lists (exclusive stop) |
 | `irukkura_varai condition:` | `while condition:` | While loop |
+| `niruthu` / `break` | `break` | Stop / terminate loop execution |
+| `thodaru` / `continue` | `continue` | Skip to next iteration |
+| `ethumpannatha` / `pass` | `pass` | Null placeholder statement (do nothing) |
 | `fun` / `seyal name(args):` | `def name(args):` | Function definition |
 | `thirupikudu value` | `return value` | Function return |
 | `kutti_fun x: expr` | `lambda x: expr` | Inline anonymous function |

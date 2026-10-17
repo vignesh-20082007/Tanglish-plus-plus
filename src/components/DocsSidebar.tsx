@@ -87,6 +87,22 @@ const DOC_ITEMS: DocItem[] = [
     example: 'count = 3\nirukkura_varai count > 0:\n    sollu(count)\n    count -= 1',
   },
   {
+    id: 'niruthu-thodaru',
+    tanglish: 'niruthu (break), thodaru (continue)',
+    python: 'break, continue',
+    category: 'Keywords',
+    desc: 'Loop control: niruthu terminates the loop (break), thodaru skips to the next iteration (continue).',
+    example: 'varisaiya i kulla range(1, 6):\n    iruntha i == 3:\n        niruthu\n    sollu("Step", i)',
+  },
+  {
+    id: 'ethumpannatha',
+    tanglish: 'ethumpannatha / pass',
+    python: 'pass',
+    category: 'Keywords',
+    desc: 'Null placeholder statement (does nothing). Used when syntax requires an empty block.',
+    example: 'fun empty_task():\n    ethumpannatha\n\nempty_task()\nsollu("Completed")',
+  },
+  {
     id: 'fun-seyal',
     tanglish: 'fun name(p1, p2):\n    ...',
     python: 'def name(p1, p2):',
